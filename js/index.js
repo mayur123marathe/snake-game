@@ -4,12 +4,14 @@ let snakeBody = [
   { x: 13, y: 16 },
   { x: 13, y: 15 },
   { x: 13, y: 14 },
-  { x: 13, y: 13 },
-  { x: 13, y: 12 },
 ];
 let food = { x: 5, y: 5 };
 let board = document.querySelector(".board");
 let direction = { x: 0, y: 0 };
+let foodMusic = new Audio("../music/food.mp3");
+let gameOverMusic = new Audio("../music/gameover.mp3");
+let moveMusic = new Audio("../music/move.mp3");
+let music = new Audio("../music/music.mp3");
 
 function main(ctime) {
   window.requestAnimationFrame(main);
@@ -22,6 +24,7 @@ function main(ctime) {
 }
 
 function gameEngine() {
+  music.play();
   board.innerHTML = "";
 
   // Rendering Snake
@@ -49,13 +52,14 @@ function gameEngine() {
 
   // Food is Yummmmy
   if (snakeBody[0].x === food.x && snakeBody[0].y === food.y) {
+    foodMusic.play();
     snakeBody.unshift({
       x: snakeBody[0].x + direction.x,
       y: snakeBody[0].y + direction.y,
     });
     food = {
-      x: Math.floor(Math.random() * 16),
-      y: Math.floor(Math.random() * 16),
+      x: 2 + Math.floor(Math.random() * 16),
+      y: 2 + Math.floor(Math.random() * 16),
     };
   }
 
@@ -84,6 +88,7 @@ function gameEngine() {
     gameOver();
   }
 
+  // Snake bites itself
   snakeBody.forEach((e, index) => {
     if (index !== 0) {
       if (snakeBody[0].x === e.x && snakeBody[0].y === e.y) {
@@ -95,13 +100,16 @@ function gameEngine() {
 }
 
 function gameOver() {
+  music.pause();
+  gameOverMusic.play();
+  setTimeout(() => {
+    music.play();
+  }, 8000);
   alert("Game Over");
   snakeBody = [
     { x: 13, y: 16 },
     { x: 13, y: 15 },
     { x: 13, y: 14 },
-    { x: 13, y: 13 },
-    { x: 13, y: 12 },
   ];
   direction = { x: 0, y: 0 };
 }
@@ -110,27 +118,31 @@ window.requestAnimationFrame(main);
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowUp":
-      if (direction.y === 1) break;
+      if (direction.y === 1 || direction.y === -1) break;
       direction.x = 0;
       direction.y = -1;
+      moveMusic.play();
 
       break;
     case "ArrowDown":
-      if (direction.y === -1) break;
+      if (direction.y === -1 || direction.y === 1) break;
       direction.x = 0;
       direction.y = 1;
+      moveMusic.play();
 
       break;
     case "ArrowLeft":
-      if (direction.x === 1) break;
+      if (direction.x === 1 || direction.x === -1) break;
       direction.x = -1;
       direction.y = 0;
+      moveMusic.play();
 
       break;
     case "ArrowRight":
-      if (direction.x === -1) break;
+      if (direction.x === -1 || direction.x === 1) break;
       direction.x = 1;
       direction.y = 0;
+      moveMusic.play();
 
       break;
   }
