@@ -1,6 +1,15 @@
 lastRender = 0;
-fps = 60;
-let snakeBody = [{ x: 13, y: 16 }];
+fps = 9;
+let snakeBody = [
+  { x: 13, y: 16 },
+  { x: 13, y: 15 },
+  { x: 13, y: 14 },
+  { x: 13, y: 13 },
+  { x: 13, y: 12 },
+];
+let food = { x: 5, y: 5 };
+let board = document.querySelector(".board");
+let direction = { x: 0, y: 0 };
 
 function main(ctime) {
   window.requestAnimationFrame(main);
@@ -13,20 +22,116 @@ function main(ctime) {
 }
 
 function gameEngine() {
-  // Rendering Snake
-  snakeBody.forEach((e, index) => {
-    let snakeElement = document.createElement("div");
-    snakeElement.style.gridRowStart = e.y;
-    snakeElement.style.gridColumnStart = e.x;
-    if (index === 0) {
-      snakeElement.classList.add("snakeHead");
-    } else {
-      snakeElement.classList.add("snakeBody");
-    }
-    document.querySelector(".board").appendChild(snakeElement);
-  });
+  board.innerHTML = "";
 
-  //   Rendering Food
+  // Rendering Snake
+  function renderSnake() {
+    snakeBody.forEach((e, index) => {
+      let snakeElement = document.createElement("div");
+      snakeElement.style.gridRowStart = e.y;
+      snakeElement.style.gridColumnStart = e.x;
+      if (index === 0) {
+        snakeElement.classList.add("snakeHead");
+      } else {
+        snakeElement.classList.add("snakeBody");
+      }
+      document.querySelector(".board").appendChild(snakeElement);
+    });
+  }
+  renderSnake();
+
+  // Rendering Food
+  let foodElement = document.createElement("div");
+  foodElement.style.gridRowStart = food.y;
+  foodElement.style.gridColumnStart = food.x;
+  foodElement.classList.add("foodStyle");
+  document.querySelector(".board").appendChild(foodElement);
+
+  // Food is Yummmmy
+  if (snakeBody[0].x === food.x && snakeBody[0].y === food.y) {
+    snakeBody.unshift({
+      x: snakeBody[0].x + direction.x,
+      y: snakeBody[0].y + direction.y,
+    });
+    food = {
+      x: Math.floor(Math.random() * 16),
+      y: Math.floor(Math.random() * 16),
+    };
+  }
+
+  // Snake Movement
+  if (direction.x === 0 && direction.y === 0) {
+    return;
+  } else {
+    for (let i = snakeBody.length - 2; i >= 0; i--) {
+      snakeBody[i + 1] = { ...snakeBody[i] };
+    }
+
+    snakeBody[0] = {
+      x: snakeBody[0].x + direction.x,
+      y: snakeBody[0].y + direction.y,
+    };
+  }
+
+  // Collision with the walls
+  if (
+    snakeBody[0].x < 0 ||
+    snakeBody[0].x > 19 ||
+    snakeBody[0].y < 0 ||
+    snakeBody[0].y > 19
+  ) {
+    renderSnake();
+    gameOver();
+  }
+
+  snakeBody.forEach((e, index) => {
+    if (index !== 0) {
+      if (snakeBody[0].x === e.x && snakeBody[0].y === e.y) {
+        renderSnake();
+        gameOver();
+      }
+    }
+  });
+}
+
+function gameOver() {
+  alert("Game Over");
+  snakeBody = [
+    { x: 13, y: 16 },
+    { x: 13, y: 15 },
+    { x: 13, y: 14 },
+    { x: 13, y: 13 },
+    { x: 13, y: 12 },
+  ];
+  direction = { x: 0, y: 0 };
 }
 
 window.requestAnimationFrame(main);
+window.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "ArrowUp":
+      if (direction.y === 1) break;
+      direction.x = 0;
+      direction.y = -1;
+
+      break;
+    case "ArrowDown":
+      if (direction.y === -1) break;
+      direction.x = 0;
+      direction.y = 1;
+
+      break;
+    case "ArrowLeft":
+      if (direction.x === 1) break;
+      direction.x = -1;
+      direction.y = 0;
+
+      break;
+    case "ArrowRight":
+      if (direction.x === -1) break;
+      direction.x = 1;
+      direction.y = 0;
+
+      break;
+  }
+});

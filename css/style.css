@@ -28,3 +28,7 @@ body {
 .snakeHead {
   background-color: rgb(223, 116, 116);
 }
+.foodStyle {
+  background-color: red;
+  border-radius: 100%;
+}
